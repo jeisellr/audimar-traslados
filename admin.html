@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Panel de reservas – Audimar Traslados</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=DM+Sans:wght@400;500;700&display=swap">
+<style>
+  :root{--navy:#14213D;--navy-2:#1E2F55;--cream:#F6F3EC;--sand:#ECE4D3;--paper:#FBF9F4;--orange:#F28C28;--orange-dk:#B4500F;--muted:#4A5568;--line:#D9CFBA;
+    --pend:#8A4B00;--pend-bg:#FFE9CC;--conf:#0F5132;--conf-bg:#D4EFE1;--done:#1E3A8A;--done-bg:#DCE6FB;--canc:#7A1F1F;--canc-bg:#F6DADA}
+  *{box-sizing:border-box}
+  html,body{margin:0;background:var(--cream);color:var(--navy);font-family:'DM Sans',Arial,sans-serif;font-size:16px;line-height:1.5}
+  button,input,select,textarea{font:inherit;color:inherit}
+  header{background:var(--navy);color:var(--cream);border-left:8px solid var(--orange)}
+  header .in{max-width:1100px;margin:0 auto;padding:18px 20px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+  .brand{font-family:'Oswald',Arial,sans-serif;font-weight:700;font-size:26px;letter-spacing:.5px;margin:0}
+  .brand span{color:var(--orange)}
+  .sub{margin:0;color:#C9D1E0;font-size:14px}
+  .hbtns{display:flex;gap:8px}
+  .hbtn{background:transparent;border:2px solid #C9D1E0;color:var(--cream);border-radius:999px;padding:8px 16px;font-weight:700;cursor:pointer;min-height:44px}
+  .hbtn:hover{border-color:var(--orange);color:var(--orange)}
+  main{max-width:1100px;margin:0 auto;padding:20px 20px 60px}
+  .login{max-width:420px;margin:60px auto;background:var(--paper);border:2px solid var(--line);border-radius:18px;padding:28px}
+  .login h1{font-family:'Oswald',Arial,sans-serif;font-size:28px;margin:0 0 8px}
+  label{font-weight:700;font-size:14px;display:block;margin-bottom:6px}
+  input[type=text],input[type=password],select,textarea{width:100%;padding:11px 12px;border:2px solid var(--line);border-radius:10px;background:#fff;min-height:46px}
+  input:focus,select:focus,textarea:focus{outline:none;border-color:var(--navy)}
+  .btn{border:0;border-radius:999px;padding:12px 20px;font-weight:700;cursor:pointer;min-height:46px;background:var(--navy);color:var(--cream)}
+  .btn:hover{background:var(--navy-2)}
+  .btn.sm{padding:8px 14px;min-height:40px;font-size:14px}
+  .btn.ghost{background:transparent;color:var(--navy);border:2px solid var(--navy)}
+  .btn.ghost:hover{background:var(--sand)}
+  .err{color:#A3260F;font-weight:700;font-size:14px}
+  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
+  .stat{background:var(--paper);border:2px solid var(--line);border-radius:14px;padding:14px 16px}
+  .stat b{display:block;font-family:'Oswald',Arial,sans-serif;font-size:32px;line-height:1.1}
+  .stat span{font-size:13px;color:var(--muted);font-weight:700}
+  .bar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;margin-bottom:16px}
+  .seg{display:flex;background:var(--sand);border-radius:999px;padding:4px;gap:2px;flex-wrap:wrap}
+  .seg button{border:0;background:transparent;border-radius:999px;padding:8px 14px;font-weight:700;color:var(--muted);cursor:pointer;min-height:40px}
+  .seg button[aria-pressed="true"]{background:var(--navy);color:var(--cream)}
+  .search{max-width:260px}
+  .day{margin:22px 0 10px;font-family:'Oswald',Arial,sans-serif;font-size:20px;font-weight:600;display:flex;align-items:baseline;gap:10px}
+  .day small{font-family:'DM Sans',Arial,sans-serif;font-size:13px;color:var(--muted);font-weight:500}
+  .cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:14px}
+  .card{background:var(--paper);border:2px solid var(--line);border-radius:16px;padding:16px;display:flex;flex-direction:column;gap:10px}
+  .card .top{display:flex;justify-content:space-between;gap:8px;align-items:flex-start}
+  .card h3{margin:0;font-size:18px;line-height:1.25}
+  .card .when{font-weight:700;color:var(--orange-dk);font-size:15px}
+  .pill{font-size:12px;font-weight:700;padding:4px 10px;border-radius:999px;white-space:nowrap}
+  .p-Pendiente{background:var(--pend-bg);color:var(--pend)}
+  .p-Confirmada{background:var(--conf-bg);color:var(--conf)}
+  .p-Realizada{background:var(--done-bg);color:var(--done)}
+  .p-Cancelada{background:var(--canc-bg);color:var(--canc)}
+  .route{font-size:15px}
+  .route b{font-size:12px;color:var(--muted);letter-spacing:.5px;display:block}
+  .meta{font-size:14px;color:var(--muted)}
+  .client{border-top:1px solid var(--line);padding-top:10px;font-size:15px}
+  .client a{color:var(--orange-dk);font-weight:700}
+  .acts{display:flex;flex-wrap:wrap;gap:6px}
+  .edit{display:grid;grid-template-columns:1fr 1fr;gap:8px;border-top:1px solid var(--line);padding-top:10px}
+  .edit .full{grid-column:1/-1}
+  .edit textarea{min-height:60px;resize:vertical}
+  .saved{font-size:13px;color:var(--conf);font-weight:700}
+  .wa{display:inline-flex;align-items:center;justify-content:center;gap:6px;background:#1F7A4D;color:#fff;text-decoration:none;border-radius:999px;padding:8px 14px;font-weight:700;font-size:14px;min-height:40px}
+  .wa:hover{background:#18633E}
+  .empty{text-align:center;color:var(--muted);padding:40px 0}
+  .cal{background:var(--paper);border:2px solid var(--line);border-radius:16px;padding:16px}
+  .calhead{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+  .calhead h2{margin:0;font-family:'Oswald',Arial,sans-serif;font-size:22px;text-transform:capitalize}
+  .grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
+  .dow{font-size:12px;font-weight:700;color:var(--muted);text-align:center;padding:4px 0}
+  .cell{min-height:74px;border:1px solid var(--line);border-radius:10px;background:#fff;padding:6px;text-align:left;cursor:pointer;display:flex;flex-direction:column;gap:3px}
+  .cell.out{background:transparent;border-style:dashed;cursor:default}
+  .cell.today{border:2px solid var(--orange)}
+  .cell.sel{background:#FFF3E6;border:2px solid var(--navy)}
+  .cell .n{font-weight:700;font-size:14px}
+  .cell .c{font-size:11px;font-weight:700;border-radius:6px;padding:1px 5px}
+  [hidden]{display:none!important}
+  @media (max-width:700px){.stats{grid-template-columns:1fr 1fr}.cards{grid-template-columns:1fr}.cell{min-height:54px}.cell .c{font-size:10px}.search{max-width:none;width:100%}}
+</style>
+</head>
+<body>
+<header><div class="in">
+  <div><p class="brand">AUDIMAR <span>TRASLADOS</span></p><p class="sub">Panel de reservas</p></div>
+  <div class="hbtns" id="hbtns" hidden><button class="hbtn" id="btn-refresh" type="button">Actualizar</button><button class="hbtn" id="btn-logout" type="button">Salir</button></div>
+</div></header>
+
+<main>
+  <form class="login" id="login">
+    <h1>Ingresar</h1>
+    <p class="meta" style="margin-top:0">Escribe la clave del panel para ver las reservas.</p>
+    <label for="clave">Clave</label>
+    <input id="clave" type="password" autocomplete="current-password" required>
+    <p class="err" id="login-err" role="alert" hidden>Clave incorrecta.</p>
+    <button class="btn" type="submit" style="width:100%;margin-top:14px">Entrar</button>
+  </form>
+
+  <section id="panel" hidden>
+    <div class="stats">
+      <div class="stat"><b id="s-pend">0</b><span>Pendientes por confirmar</span></div>
+      <div class="stat"><b id="s-hoy">0</b><span>Traslados hoy</span></div>
+      <div class="stat"><b id="s-prox">0</b><span>Próximos 7 días</span></div>
+      <div class="stat"><b id="s-tot">0</b><span>Total recibidas</span></div>
+    </div>
+    <div class="bar">
+      <div class="seg" role="group" aria-label="Vista">
+        <button type="button" data-view="lista" aria-pressed="true">Lista</button>
+        <button type="button" data-view="cal" aria-pressed="false">Calendario</button>
+      </div>
+      <div class="seg" role="group" aria-label="Filtro" id="filtros">
+        <button type="button" data-f="pend" aria-pressed="true">Pendientes</button>
+        <button type="button" data-f="prox" aria-pressed="false">Próximas</button>
+        <button type="button" data-f="pas" aria-pressed="false">Pasadas</button>
+        <button type="button" data-f="todas" aria-pressed="false">Todas</button>
+      </div>
+      <input class="search" id="q" type="text" placeholder="Buscar nombre, teléfono o código" aria-label="Buscar">
+    </div>
+    <p class="meta" id="updated" aria-live="polite"></p>
+    <div id="cal" hidden></div>
+    <div id="lista"></div>
+  </section>
+</main>
+
+<script>
+(function(){
+  var KEYSTORE='audimar-admin-key', key='', all=[], view='lista', filtro='pend', q='', selDay='', calMonth=null, timer=null;
+  var $=function(id){return document.getElementById(id)};
+  function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+  function today(){var d=new Date();d.setMinutes(d.getMinutes()-d.getTimezoneOffset());return d.toISOString().slice(0,10)}
+  function addDays(iso,n){var p=iso.split('-');var d=new Date(+p[0],+p[1]-1,+p[2]+n);return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')}
+  var DIAS=['domingo','lunes','martes','miércoles','jueves','viernes','sábado'], MESES=['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+  function fmt(iso){if(!iso)return '';var p=iso.split('-');var d=new Date(+p[0],+p[1]-1,+p[2]);return DIAS[d.getDay()]+' '+(+p[2])+' de '+MESES[+p[1]-1]}
+  function dayLabel(iso){var t=today();if(iso===t)return 'Hoy';if(iso===addDays(t,1))return 'Mañana';if(iso===addDays(t,-1))return 'Ayer';var s=fmt(iso);return s.charAt(0).toUpperCase()+s.slice(1)}
+  function phoneWa(t){var d=String(t||'').replace(/\D/g,'');if(d.length===9&&d[0]==='9')d='56'+d;if(d.length===8)d='569'+d;return d}
+
+  function api(method,body){
+    return fetch('/api/reservas',{method:method,headers:{'content-type':'application/json','x-admin-key':key},body:body?JSON.stringify(body):undefined,cache:'no-store'})
+      .then(function(r){return r.json().catch(function(){return {}}).then(function(j){if(r.status===401){var e=new Error('auth');e.auth=true;throw e}if(!r.ok)throw new Error(j.error||'Error');return j})});
+  }
+  function load(){
+    $('updated').textContent='Cargando…';
+    return api('GET').then(function(j){all=j.reservas||[];render();var n=new Date();$('updated').textContent='Actualizado a las '+String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0')+'. Se actualiza solo cada minuto.'})
+      .catch(function(e){if(e.auth){logout();$('login-err').hidden=false;}else{$('updated').textContent='No se pudieron cargar las reservas. Revisa tu conexión y presiona Actualizar.'}});
+  }
+  function login(k){key=k;return api('GET').then(function(j){try{localStorage.setItem(KEYSTORE,k)}catch(e){}$('login').hidden=true;$('panel').hidden=false;$('hbtns').hidden=false;all=j.reservas||[];render();$('updated').textContent='Actualizado recién.';clearInterval(timer);timer=setInterval(function(){var a=document.activeElement;if(a&&a.closest&&a.closest('.card'))return;load()},60000)})}
+  function logout(){key='';try{localStorage.removeItem(KEYSTORE)}catch(e){}clearInterval(timer);$('panel').hidden=true;$('hbtns').hidden=true;$('login').hidden=false}
+
+  $('login').addEventListener('submit',function(e){e.preventDefault();$('login-err').hidden=true;login($('clave').value.trim()).catch(function(err){$('login-err').textContent=err.auth?'Clave incorrecta.':'No se pudo conectar. Inténtalo de nuevo.';$('login-err').hidden=false;logout()})});
+  $('btn-logout').addEventListener('click',logout);
+  $('btn-refresh').addEventListener('click',load);
+  $('q').addEventListener('input',function(){q=this.value.trim().toLowerCase();render()});
+  document.querySelectorAll('[data-view]').forEach(function(b){b.addEventListener('click',function(){view=b.dataset.view;document.querySelectorAll('[data-view]').forEach(function(x){x.setAttribute('aria-pressed',x===b)});render()})});
+  document.querySelectorAll('[data-f]').forEach(function(b){b.addEventListener('click',function(){filtro=b.dataset.f;selDay='';document.querySelectorAll('[data-f]').forEach(function(x){x.setAttribute('aria-pressed',x===b)});render()})});
+
+  function matches(r){
+    if(q){var h=(r.nombre+' '+r.telefono+' '+r.codigo+' '+r.origen+' '+r.destino).toLowerCase();if(h.indexOf(q)<0)return false}
+    if(view==='cal'&&selDay)return r.fecha===selDay;
+    var t=today();
+    if(filtro==='pend')return r.estado==='Pendiente';
+    if(filtro==='prox')return r.fecha>=t&&r.estado!=='Cancelada'&&r.estado!=='Realizada';
+    if(filtro==='pas')return r.fecha<t;
+    return true;
+  }
+  function stats(){
+    var t=today(),w=addDays(t,7);
+    $('s-pend').textContent=all.filter(function(r){return r.estado==='Pendiente'}).length;
+    $('s-hoy').textContent=all.filter(function(r){return r.fecha===t&&r.estado!=='Cancelada'}).length;
+    $('s-prox').textContent=all.filter(function(r){return r.fecha>=t&&r.fecha<=w&&r.estado!=='Cancelada'}).length;
+    $('s-tot').textContent=all.length;
+  }
+  function confirmMsg(r){
+    var s='Hola '+r.nombre.split(' ')[0]+', te escribimos de Audimar Traslados. Confirmamos tu traslado ('+r.servicio+') el '+fmt(r.fecha)+' a las '+r.hora+' h, desde '+r.origen+' hasta '+r.destino+'.';
+    if(r.vuelta&&r.fecha2)s+=' Regreso: '+fmt(r.fecha2)+' a las '+r.hora2+' h.';
+    if(+r.espera)s+=' Incluye espera de '+r.espera+' min.';
+    var v=r.precio||(r.precio_estimado?'$'+Number(r.precio_estimado).toLocaleString('es-CL'):'');
+    if(v)s+=' Valor: '+v+'.';
+    s+=' Se emite boleta. Código de reserva: '+r.codigo+'. ¡Gracias por preferirnos!';
+    return s;
+  }
+  function cl(n){return '$'+Number(n||0).toLocaleString('es-CL')}
+  function desglose(r){var d=r.desglose; if(!d) return ''; var x=[];
+    if(d.recargoIda) x.push('nocturno ida '+cl(d.recargoIda)); if(d.recargoRegreso) x.push('nocturno regreso '+cl(d.recargoRegreso));
+    if(d.montoEspera) x.push('espera '+cl(d.montoEspera));
+    return x.length?'<br>Incluye: '+esc(x.join(' · ')):''; }
+  function card(r){
+    var det=r.tipo==='Personas'?esc(r.pasajeros)+' pasajero(s) · '+esc(r.equipaje):'Carga: '+esc(r.detalle);
+    var wa=phoneWa(r.telefono);
+    return '<article class="card" data-id="'+esc(r.id)+'">'+
+      '<div class="top"><div><div class="when">'+esc(r.hora)+' h · '+esc(dayLabel(r.fecha))+'</div><h3>'+esc(r.servicio)+'</h3><div class="meta">'+esc(r.tipo)+' · Código '+esc(r.codigo)+'</div></div><span class="pill p-'+esc(r.estado)+'">'+esc(r.estado)+'</span></div>'+
+      '<div class="route"><b>RETIRO</b>'+esc(r.origen)+'</div><div class="route"><b>DESTINO</b>'+esc(r.destino)+'</div>'+
+      (r.vuelta?'<div class="meta">Regreso: '+esc(fmt(r.fecha2))+' a las '+esc(r.hora2)+' h</div>':'')+
+      '<div class="meta">'+det+'</div>'+
+      (+r.espera?'<div class="meta">Espera solicitada: '+esc(r.espera)+' min</div>':'')+
+      (r.precio_estimado?'<div class="meta"><b style="color:#14213D">Estimado web: $'+Number(r.precio_estimado).toLocaleString('es-CL')+'</b> · '+esc(String(r.km).replace('.',','))+' km'+(r.minutos?' · ~'+esc(r.minutos)+' min':'')+desglose(r)+'</div>':'')+
+      (r.notas?'<div class="meta">Comentario: '+esc(r.notas)+'</div>':'')+
+      '<div class="client"><b>'+esc(r.nombre)+'</b><br><a href="tel:+'+esc(wa)+'">'+esc(r.telefono)+'</a>'+(r.correo?' · '+esc(r.correo):'')+(r.rut?'<br>RUT boleta: '+esc(r.rut):'')+'</div>'+
+      '<div class="acts"><a class="wa" target="_blank" rel="noopener" href="https://wa.me/'+esc(wa)+'?text='+encodeURIComponent(confirmMsg(r))+'">WhatsApp: enviar confirmación</a></div>'+
+      '<div class="edit"><div><label for="pr-'+esc(r.id)+'">Precio</label><input type="text" id="pr-'+esc(r.id)+'" data-k="precio" value="'+esc(r.precio||(r.precio_estimado?'$'+Number(r.precio_estimado).toLocaleString('es-CL'):''))+'" placeholder="$"></div>'+
+      '<div><label for="es-'+esc(r.id)+'">Estado</label><select id="es-'+esc(r.id)+'" data-k="estado">'+['Pendiente','Confirmada','Realizada','Cancelada'].map(function(s){return '<option'+(s===r.estado?' selected':'')+'>'+s+'</option>'}).join('')+'</select></div>'+
+      '<div class="full"><label for="no-'+esc(r.id)+'">Nota interna</label><textarea id="no-'+esc(r.id)+'" data-k="nota_interna">'+esc(r.nota_interna)+'</textarea></div>'+
+      '<div class="full" style="display:flex;align-items:center;gap:10px"><button type="button" class="btn sm" data-save>Guardar cambios</button><span class="saved" role="status" aria-live="polite"></span></div></div>'+
+      '</article>';
+  }
+  function renderList(){
+    var rows=all.filter(matches);
+    if(filtro==='pas'&&!(view==='cal'&&selDay))rows=rows.slice().reverse();
+    if(!rows.length){$('lista').innerHTML='<p class="empty">'+(all.length?'No hay reservas en esta vista.':'Aún no llegan reservas. Cuando un cliente reserve desde la web, aparecerá aquí.')+'</p>';return}
+    var html='',last='';
+    rows.forEach(function(r){if(r.fecha!==last){var n=rows.filter(function(x){return x.fecha===r.fecha}).length;html+=(last?'</div>':'')+'<h2 class="day">'+esc(dayLabel(r.fecha))+'<small>'+n+' traslado'+(n>1?'s':'')+'</small></h2><div class="cards">';last=r.fecha}html+=card(r)});
+    $('lista').innerHTML=html+'</div>';
+  }
+  function renderCal(){
+    if(!calMonth){var t=today().split('-');calMonth=[+t[0],+t[1]-1]}
+    var y=calMonth[0],m=calMonth[1],first=new Date(y,m,1),start=(first.getDay()+6)%7,days=new Date(y,m+1,0).getDate(),t=today();
+    var h='<div class="cal"><div class="calhead"><button type="button" class="btn ghost sm" data-mv="-1" aria-label="Mes anterior">‹</button><h2>'+MESES[m]+' '+y+'</h2><button type="button" class="btn ghost sm" data-mv="1" aria-label="Mes siguiente">›</button></div><div class="grid">';
+    ['lun','mar','mié','jue','vie','sáb','dom'].forEach(function(d){h+='<div class="dow">'+d+'</div>'});
+    for(var i=0;i<start;i++)h+='<div class="cell out" aria-hidden="true"></div>';
+    for(var d=1;d<=days;d++){
+      var iso=y+'-'+String(m+1).padStart(2,'0')+'-'+String(d).padStart(2,'0');
+      var day=all.filter(function(r){return r.fecha===iso&&r.estado!=='Cancelada'});
+      var pend=day.filter(function(r){return r.estado==='Pendiente'}).length,ok=day.length-pend;
+      h+='<button type="button" class="cell'+(iso===t?' today':'')+(iso===selDay?' sel':'')+'" data-day="'+iso+'" aria-label="'+esc(fmt(iso))+': '+day.length+' traslados"><span class="n">'+d+'</span>'+
+        (pend?'<span class="c p-Pendiente">'+pend+' pend.</span>':'')+(ok?'<span class="c p-Confirmada">'+ok+' conf.</span>':'')+'</button>';
+    }
+    h+='</div><p class="meta" style="margin:10px 0 0">'+(selDay?'Mostrando: '+esc(fmt(selDay))+'. ':'')+'Toca un día para ver sus traslados.</p></div>';
+    $('cal').innerHTML=h;
+  }
+  function render(){stats();$('cal').hidden=view!=='cal';$('filtros').hidden=view==='cal';if(view==='cal'){renderCal();if(!selDay){$('lista').innerHTML='';return}}renderList()}
+
+  document.addEventListener('click',function(e){
+    var mv=e.target.closest('[data-mv]');if(mv){var n=+mv.dataset.mv;calMonth=[calMonth[0]+(calMonth[1]+n<0?-1:calMonth[1]+n>11?1:0),(calMonth[1]+n+12)%12];render();return}
+    var c=e.target.closest('[data-day]');if(c){selDay=c.dataset.day===selDay?'':c.dataset.day;render();return}
+    var s=e.target.closest('[data-save]');if(s){
+      var art=s.closest('.card'),id=art.dataset.id,body={id:id},msg=art.querySelector('.saved');
+      art.querySelectorAll('[data-k]').forEach(function(el){body[el.dataset.k]=el.value});
+      s.disabled=true;msg.textContent='Guardando…';
+      api('PATCH',body).then(function(j){var i=all.findIndex(function(r){return r.id===id});if(i>=0)all[i]=j.reserva;render();var a=document.querySelector('.card[data-id="'+id+'"] .saved');if(a)a.textContent='Guardado'})
+        .catch(function(err){if(err.auth){logout();return}s.disabled=false;msg.textContent='No se pudo guardar. Intenta otra vez.'});
+    }
+  });
+
+  var saved='';try{saved=localStorage.getItem(KEYSTORE)||''}catch(e){}
+  if(saved)login(saved).catch(function(){logout()});
+})();
+</script>
+</body>
+</html>

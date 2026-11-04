@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Audimar Traslados – Reserva tu traslado</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=DM+Sans:wght@400;500;700&display=swap">
+<style>
+  :root{
+    --navy:#14213D; --navy-2:#1E2F55; --cream:#F6F3EC; --sand:#ECE4D3; --paper:#FBF9F4;
+    --orange:#F28C28; --orange-dk:#B4500F; --ink:#14213D; --muted:#4A5568; --line:#D9CFBA;
+    --ok:#1F6B4A; --err:#A3260F;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;background:var(--cream);color:var(--ink);font-family:'DM Sans',Arial,sans-serif;font-size:16px;line-height:1.5}
+  button,input,select,textarea{font:inherit;color:inherit}
+  .wrap{max-width:600px;margin:0 auto;padding:0 20px 48px}
+  header.top{background:var(--navy);color:var(--cream);border-left:8px solid var(--orange)}
+  header.top .in{max-width:600px;margin:0 auto;padding:28px 20px 24px}
+  .eyebrow{font-size:12px;font-weight:700;letter-spacing:2px;color:var(--orange);margin:0 0 6px}
+  h1{font-family:'Oswald',Arial,sans-serif;font-weight:700;font-size:40px;line-height:1;margin:0;letter-spacing:.5px}
+  h1 span{color:var(--orange)}
+  .tagline{margin:12px 0 0;color:#C9D1E0;font-size:15px}
+  .badges{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+  .badge{background:var(--orange);color:var(--navy);font-weight:700;font-size:13px;padding:5px 12px;border-radius:999px}
+  .badge.ghost{background:transparent;color:var(--orange);border:2px solid var(--orange);padding:3px 10px}
+  nav.tabs{display:flex;gap:4px;max-width:600px;margin:0 auto;padding:16px 20px 0}
+  nav.tabs button{flex:1;border:0;background:transparent;padding:12px 8px;font-weight:700;color:var(--muted);border-bottom:3px solid var(--line);cursor:pointer;min-height:48px}
+  nav.tabs button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--orange)}
+  .progress{display:flex;gap:6px;margin:20px 0 8px}
+  .progress i{flex:1;height:6px;border-radius:3px;background:var(--line)}
+  .progress i.on{background:var(--orange)}
+  .steplabel{font-size:13px;font-weight:700;letter-spacing:1px;color:var(--orange-dk);margin:0}
+  h2{font-family:'Oswald',Arial,sans-serif;font-weight:600;font-size:28px;line-height:1.15;margin:4px 0 18px}
+  .choice{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .choice.one{grid-template-columns:1fr}
+  .opt{position:relative}
+  .opt input{position:absolute;opacity:0;inset:0;width:100%;height:100%;margin:0;cursor:pointer}
+  .opt .card{display:flex;flex-direction:column;gap:4px;padding:16px;border:2px solid var(--line);background:var(--paper);border-radius:14px;min-height:64px;height:100%}
+  .opt .card b{font-size:17px}
+  .opt .card small{color:var(--muted);font-size:14px;line-height:1.35}
+  .opt input:checked + .card{border-color:var(--orange);background:#FFF3E6;box-shadow:0 0 0 2px var(--orange) inset}
+  .opt input:focus-visible + .card{outline:3px solid var(--navy);outline-offset:2px}
+  .big .card{align-items:flex-start;padding:20px}
+  .big .card svg{width:34px;height:34px;color:var(--orange-dk);margin-bottom:6px}
+  .field{display:flex;flex-direction:column;gap:6px;margin-bottom:16px}
+  .field label,.legend{font-weight:700;font-size:15px}
+  .hint{font-size:13px;color:var(--muted);margin:0}
+  input[type=text],input[type=tel],input[type=email],input[type=date],input[type=time],input[type=number],select,textarea{
+    width:100%;padding:13px 14px;border:2px solid var(--line);border-radius:12px;background:#fff;min-height:50px}
+  textarea{min-height:90px;resize:vertical}
+  input:focus,select:focus,textarea:focus{outline:none;border-color:var(--navy)}
+  .row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  .check{display:flex;align-items:center;gap:10px;padding:12px 0;min-height:48px;cursor:pointer}
+  .check input{width:22px;height:22px;accent-color:var(--orange-dk)}
+  .err{color:var(--err);font-size:14px;font-weight:700;margin:0}
+  .invalid{border-color:var(--err)!important}
+  .actions{display:flex;gap:12px;margin-top:24px}
+  .btn{border:0;border-radius:999px;padding:14px 22px;font-weight:700;font-size:16px;cursor:pointer;min-height:52px;text-align:center;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:8px}
+  .btn.primary{background:var(--navy);color:var(--cream);flex:1}
+  .btn.primary:hover{background:var(--navy-2)}
+  .btn.ghost{background:transparent;border:2px solid var(--navy);color:var(--navy)}
+  .btn.wa{background:#1F7A4D;color:#fff;width:100%}
+  .btn.wa:hover{background:#18633E}
+  .btn svg{width:20px;height:20px}
+  .summary{background:var(--paper);border:2px solid var(--line);border-radius:16px;padding:6px 18px}
+  .summary dl{margin:0}
+  .summary .it{display:grid;grid-template-columns:120px 1fr;gap:10px;padding:11px 0;border-bottom:1px solid var(--line)}
+  .summary .it:last-child{border-bottom:0}
+  .summary dt{font-size:13px;font-weight:700;color:var(--orange-dk);letter-spacing:.5px;text-transform:uppercase;padding-top:2px}
+  .summary dd{margin:0;font-weight:500}
+  .note{background:var(--sand);border-radius:14px;padding:14px 16px;font-size:14px;margin-top:16px}
+  .note b{color:var(--ink)}
+  .send{display:flex;flex-direction:column;gap:12px;margin-top:20px}
+  .alt{font-size:14px;color:var(--muted);text-align:center;margin:4px 0 0}
+  .alt a{color:var(--orange-dk);font-weight:700}
+  .done{text-align:center;padding:24px 0}
+  .done .tick{width:72px;height:72px;border-radius:50%;background:var(--orange);display:flex;align-items:center;justify-content:center;margin:8px auto 16px}
+  .done .tick svg{width:38px;height:38px;color:var(--navy)}
+  .list{display:flex;flex-direction:column;gap:12px;margin-top:20px}
+  .bk{background:var(--paper);border:2px solid var(--line);border-radius:14px;padding:16px}
+  .bk .h{display:flex;justify-content:space-between;gap:8px;align-items:baseline}
+  .bk .h b{font-size:17px}
+  .bk .h span{font-size:13px;color:var(--muted)}
+  .bk p{margin:6px 0 0;color:var(--muted);font-size:14px}
+  .bk .acts{display:flex;gap:16px;margin-top:10px}
+  .linkbtn{background:none;border:0;padding:6px 0;color:var(--orange-dk);font-weight:700;cursor:pointer;font-size:14px;min-height:44px}
+  .empty{text-align:center;color:var(--muted);padding:32px 0}
+  footer{max-width:600px;margin:0 auto;padding:24px 20px 40px;color:var(--muted);font-size:13px;border-top:1px solid var(--line)}
+  footer b{color:var(--ink)}
+  [hidden]{display:none!important}
+  @media (max-width:420px){ .choice{grid-template-columns:1fr} .row{grid-template-columns:1fr} h1{font-size:34px} .summary .it{grid-template-columns:1fr;gap:2px} }
+  .ac{position:relative}
+  .ac ul{position:absolute;left:0;right:0;top:100%;z-index:20;margin:4px 0 0;padding:4px;list-style:none;background:#fff;border:2px solid var(--navy);border-radius:12px;box-shadow:0 8px 24px rgba(20,33,61,.15);max-height:260px;overflow:auto}
+  .ac li{padding:10px 12px;border-radius:8px;cursor:pointer;font-size:15px}
+  .ac li[aria-selected="true"],.ac li:hover{background:#FFF3E6}
+  .quote{background:var(--navy);color:var(--cream);border-radius:16px;padding:16px 18px;margin:4px 0 16px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+  .quote .lbl{font-size:13px;font-weight:700;letter-spacing:1px;color:var(--orange)}
+  .quote .amt{font-family:'Oswald',Arial,sans-serif;font-size:34px;font-weight:700;line-height:1}
+  .quote .det{font-size:14px;color:#C9D1E0}
+  .quote.muted{background:var(--sand);color:var(--ink)}
+  .quote.muted .det{color:var(--muted)}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="in">
+    <p class="eyebrow">ANTOFAGASTA Y LA REGIÓN</p>
+    <h1>AUDIMAR <span>TRASLADOS</span></h1>
+    <p class="tagline">Reserva tu traslado de personas o cargas pequeñas en menos de dos minutos.</p>
+    <div class="badges"><span class="badge">Servicio 24/7</span><span class="badge">Previa reservación</span><span class="badge ghost">Se emite boleta</span></div>
+  </div>
+</header>
+
+<nav class="tabs" role="tablist" aria-label="Secciones">
+  <button role="tab" id="tab-reservar" aria-selected="true" aria-controls="view-reservar">Reservar</button>
+  <button role="tab" id="tab-mis" aria-selected="false" aria-controls="view-mis">Mis solicitudes</button>
+</nav>
+
+<main class="wrap">
+<section id="view-reservar" role="tabpanel" aria-labelledby="tab-reservar">
+<form id="form" novalidate>
+  <div class="progress" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+
+  <!-- Paso 1 -->
+  <fieldset class="step" data-step="1" style="border:0;padding:0;margin:0">
+    <p class="steplabel">PASO 1 DE 4</p>
+    <h2>¿Qué necesitas trasladar?</h2>
+    <div class="choice">
+      <label class="opt big"><input type="radio" name="tipo" value="Personas" required>
+        <span class="card"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="7" r="4"/><path d="M3 21v-2a4 4 0 0 1 4-4h4a4 4 0 0 1 4 4v2"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/><path d="M21 21v-2a4 4 0 0 0-3-3.85"/></svg><b>Personas</b><small>Aeropuerto, ciudad, otras ciudades o eventos</small></span></label>
+      <label class="opt big"><input type="radio" name="tipo" value="Cargas pequeñas">
+        <span class="card"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><path d="M3.3 7 12 12l8.7-5"/><path d="M12 22V12"/></svg><b>Cargas pequeñas</b><small>Paquetes, encargos y compras que caben en el vehículo</small></span></label>
+    </div>
+    <p class="err" data-err="tipo" hidden>Elige una opción para continuar.</p>
+
+    <div id="sub-personas" hidden>
+      <p class="legend" style="margin:24px 0 10px">Tipo de viaje</p>
+      <div class="choice">
+        <label class="opt"><input type="radio" name="servicio" value="Aeropuerto"><span class="card"><b>Aeropuerto</b><small>Ida o vuelta a Cerro Moreno</small></span></label>
+        <label class="opt"><input type="radio" name="servicio" value="Dentro de la ciudad"><span class="card"><b>Dentro de la ciudad</b><small>Trámites, citas, compras</small></span></label>
+        <label class="opt"><input type="radio" name="servicio" value="Entre ciudades"><span class="card"><b>Entre ciudades</b><small>Mejillones, Calama, Tocopilla…</small></span></label>
+        <label class="opt"><input type="radio" name="servicio" value="Eventos y grupos"><span class="card"><b>Eventos y grupos</b><small>Matrimonios, cumpleaños, paseos</small></span></label>
+      </div>
+    </div>
+    <div id="sub-carga" hidden>
+      <p class="legend" style="margin:24px 0 10px">Tipo de carga</p>
+      <div class="choice">
+        <label class="opt"><input type="radio" name="servicio" value="Paquetes y encargos"><span class="card"><b>Paquetes y encargos</b><small>Cajas, bolsos y encargos</small></span></label>
+        <label class="opt"><input type="radio" name="servicio" value="Compras y ventas"><span class="card"><b>Compras y ventas</b><small>Artículos que compraste o vendiste</small></span></label>
+        <label class="opt"><input type="radio" name="servicio" value="Retiro en tiendas"><span class="card"><b>Retiro en tiendas</b><small>Desde el mall o la tienda a tu casa</small></span></label>
+        <label class="opt"><input type="radio" name="servicio" value="Objetos para reciclaje o donación"><span class="card"><b>Lo que ya no usas</b><small>A reciclaje o donación</small></span></label>
+      </div>
+    </div>
+    <p class="err" data-err="servicio" hidden>Elige el tipo de servicio.</p>
+  </fieldset>
+
+  <!-- Paso 2 -->
+  <fieldset class="step" data-step="2" hidden style="border:0;padding:0;margin:0">
+    <p class="steplabel">PASO 2 DE 4</p>
+    <h2>¿Desde dónde y hacia dónde?</h2>
+    <div class="field ac"><label for="origen">Dirección de retiro</label><input id="origen" name="origen" type="text" autocomplete="off" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="ac-origen" placeholder="Ej: Av. Grecia 1200, Antofagasta"><ul id="ac-origen" role="listbox" hidden></ul><p class="err" data-err="origen" hidden>Indica la dirección de retiro.</p></div>
+    <div class="field ac"><label for="destino">Dirección de destino</label><input id="destino" name="destino" type="text" autocomplete="off" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="ac-destino" placeholder="Ej: Aeropuerto Cerro Moreno"><ul id="ac-destino" role="listbox" hidden></ul><p class="err" data-err="destino" hidden>Indica el destino.</p></div><div class="amt" id="q-amt"></div></div>
+    <div class="row">
+      <div class="field"><label for="fecha">Fecha</label><input id="fecha" name="fecha" type="date"><p class="err" data-err="fecha" hidden>Elige una fecha desde hoy.</p></div>
+      <div class="field"><label for="hora">Hora</label><input id="hora" name="hora" type="time"><p class="err" data-err="hora" hidden>Indica la hora.</p></div>
+    </div>
+    <label class="check"><input type="checkbox" id="vuelta" name="vuelta"> <span>Necesito también el regreso</span></label>
+    <div id="box-vuelta" class="row" hidden>
+      <div class="field"><label for="fecha2">Fecha de regreso</label><input id="fecha2" name="fecha2" type="date"><p class="err" data-err="fecha2" hidden>Elige la fecha de regreso.</p></div>
+      <div class="field"><label for="hora2">Hora de regreso</label><input id="hora2" name="hora2" type="time"><p class="err" data-err="hora2" hidden>Indica la hora de regreso.</p></div>
+    </div>
+    <p class="hint" style="margin:-6px 0 14px">Entre las 22:00 y las 06:00 se aplica un recargo nocturno de 20 %.</p>
+    <div class="field"><label for="espera">¿Necesitas que el conductor te espere?</label>
+      <select id="espera" name="espera">
+        <option value="0">No, solo el traslado</option>
+        <option value="15">Sí, 15 minutos</option>
+        <option value="30">Sí, 30 minutos</option>
+        <option value="45">Sí, 45 minutos</option>
+        <option value="60">Sí, 1 hora</option>
+        <option value="90">Sí, 1 hora y media</option>
+        <option value="120">Sí, 2 horas</option>
+      </select>
+      <p class="hint">Útil para trámites, citas o compras. Hasta 5 minutos de espera no tienen costo. Desde el minuto 6 se cobran $2.500 por cada bloque de 10 minutos (6 a 10 min: $2.500; 11 a 20 min: $5.000; y así sucesivamente).</p>
+    </div>
+    <div id="quote" class="quote muted" role="status" aria-live="polite"><div><div class="lbl">PRECIO ESTIMADO</div><div class="det" id="q-det">Escribe el retiro y el destino y elige la dirección de la lista para calcular el precio.</div></div>
+    <div id="box-pax" class="row">
+      <div class="field"><label for="pasajeros">Pasajeros</label><select id="pasajeros" name="pasajeros"><option>1</option><option>2</option><option>3</option><option>4</option></select></div>
+      <div class="field"><label for="equipaje">Equipaje</label><select id="equipaje" name="equipaje"><option>Sin equipaje</option><option>Equipaje de mano</option><option>1 maleta grande</option><option>2 o más maletas</option></select></div>
+    </div>
+    <div id="box-carga" class="field" hidden><label for="detalle">¿Qué vamos a llevar?</label><textarea id="detalle" name="detalle" placeholder="Ej: 3 cajas medianas y un microondas"></textarea><p class="hint">Cuéntanos el tamaño aproximado para confirmar que cabe en el vehículo.</p><p class="err" data-err="detalle" hidden>Describe brevemente la carga.</p></div>
+  </fieldset>
+
+  <!-- Paso 3 -->
+  <fieldset class="step" data-step="3" hidden style="border:0;padding:0;margin:0">
+    <p class="steplabel">PASO 3 DE 4</p>
+    <h2>Tus datos de contacto</h2>
+    <div class="field"><label for="nombre">Nombre y apellido</label><input id="nombre" name="nombre" type="text" autocomplete="name"><p class="err" data-err="nombre" hidden>Escribe tu nombre.</p></div>
+    <div class="field"><label for="telefono">Teléfono</label><input id="telefono" name="telefono" type="tel" autocomplete="tel" placeholder="+56 9 1234 5678"><p class="err" data-err="telefono" hidden>Escribe un teléfono válido.</p></div>
+    <div class="field"><label for="correo">Correo (opcional)</label><input id="correo" name="correo" type="email" autocomplete="email"><p class="err" data-err="correo" hidden>Revisa el correo.</p></div>
+    <div class="field"><label for="rut">RUT para la boleta (opcional)</label><input id="rut" name="rut" type="text" placeholder="12.345.678-9"></div>
+    <div class="field"><label for="notas">Comentarios (opcional)</label><textarea id="notas" name="notas" placeholder="Ej: número de vuelo, silla para niño, piso del departamento…"></textarea></div>
+  </fieldset>
+
+  <!-- Paso 4 -->
+  <fieldset class="step" data-step="4" hidden style="border:0;padding:0;margin:0">
+    <p class="steplabel">PASO 4 DE 4</p>
+    <h2>Revisa y envía tu solicitud</h2>
+    <div class="summary"><dl id="resumen"></dl></div>
+    <div class="note"><b>¿Cómo sigue?</b> Recibimos tu solicitud y te contactamos por WhatsApp o teléfono con el precio y la confirmación. Atendemos 24/7, previa reservación, y emitimos boleta por cada servicio.</div>
+    <div class="hp" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden"><label for="website">No completar</label><input id="website" name="website" type="text" tabindex="-1" autocomplete="off"></div>
+    <div class="send">
+      <button type="button" class="btn primary" id="btn-send" style="width:100%">Enviar solicitud de reserva</button>
+      <p class="err" id="send-err" role="alert" hidden></p>
+      <div id="fallback" hidden>
+        <a class="btn wa" id="btn-wa" href="#" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>Enviar por WhatsApp</a>
+        <p class="alt">Se abre WhatsApp con el mensaje listo al <b>+56 9 4933 3567</b>.</p>
+      </div>
+      <p class="alt">¿Dudas? Llámanos al <b>+56 9 4933 3567</b> o al <b>+56 9 3220 0117</b>.</p>
+    </div>
+  </fieldset>
+
+  <div class="actions">
+    <button type="button" class="btn ghost" id="btn-back" hidden>Atrás</button>
+    <button type="button" class="btn primary" id="btn-next">Continuar</button>
+  </div>
+</form>
+
+<div id="done" class="done" hidden>
+  <div class="tick"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></div>
+  <h2>¡Solicitud recibida!</h2>
+  <p>Tu código de reserva es <b id="codigo" style="font-size:22px;letter-spacing:2px"></b></p>
+  <p>Te contactaremos pronto con el precio y la confirmación. Tu reserva queda confirmada cuando te respondamos.</p>
+  <div class="send" style="margin-top:8px">
+    <a class="btn wa" id="btn-wa-done" href="#" target="_blank" rel="noopener">Avisar por WhatsApp (opcional)</a>
+  </div>
+  <div class="actions" style="justify-content:center"><button type="button" class="btn ghost" id="btn-new">Hacer otra reserva</button></div>
+</div>
+</section>
+
+<section id="view-mis" role="tabpanel" aria-labelledby="tab-mis" hidden>
+  <h2 style="margin-top:24px">Mis solicitudes</h2>
+  <p class="hint">Se guardan solo en este teléfono o computador, para que puedas repetir un traslado rápido.</p>
+  <div class="list" id="lista"></div>
+</section>
+</main>
+
+<footer>
+  <b>Audimar Traslados</b> · Audimar del Valle Salcedo · RUT 27.699.831-5<br>
+  Teléfonos: +56 9 4933 3567 · +56 9 3220 0117 · aurimarsalcedo22@gmail.com<br>
+  Servicio 24/7, previa reservación. Se emite boleta.
+</footer>
+
+<script>
+(function(){
+  var NUM1='56949333567', NUM2='56932200117', MAIL='aurimarsalcedo22@gmail.com', KEY='audimar-solicitudes';
+  var form=document.getElementById('form'), steps=[].slice.call(document.querySelectorAll('.step'));
+  var bars=[].slice.call(document.querySelectorAll('.progress i'));
+  var btnNext=document.getElementById('btn-next'), btnBack=document.getElementById('btn-back');
+  var cur=1;
+  var $=function(id){return document.getElementById(id)};
+  var val=function(n){var el=form.elements[n]; if(!el) return ''; if(el.length!==undefined && el.tagName===undefined){for(var i=0;i<el.length;i++) if(el[i].checked) return el[i].value; return ''} if(el.type==='checkbox') return el.checked; return (el.value||'').trim()};
+
+  function today(){var d=new Date(); d.setMinutes(d.getMinutes()-d.getTimezoneOffset()); return d.toISOString().slice(0,10)}
+  $('fecha').min=today(); $('fecha2').min=today();
+
+  function store(){try{return JSON.parse(localStorage.getItem(KEY)||'[]')}catch(e){return []}}
+  function save(list){try{localStorage.setItem(KEY,JSON.stringify(list.slice(0,20)))}catch(e){}}
+
+  function syncTipo(){
+    var t=val('tipo');
+    $('sub-personas').hidden=t!=='Personas';
+    $('sub-carga').hidden=t!=='Cargas pequeñas';
+    $('box-pax').hidden=t!=='Personas';
+    $('box-carga').hidden=t!=='Cargas pequeñas';
+  }
+  form.addEventListener('change',function(e){
+    if(e.target.name==='tipo'){ [].forEach.call(form.querySelectorAll('input[name=servicio]'),function(r){r.checked=false}); syncTipo(); }
+    if(e.target.id==='vuelta'){ $('box-vuelta').hidden=!e.target.checked; requestQuote(); }
+    if(['hora','hora2','espera'].indexOf(e.target.id)>=0 && geo.origen!==undefined) requestQuote();
+    clearErr(e.target.name);
+  });
+  form.addEventListener('input',function(e){clearErr(e.target.name)});
+
+  function showErr(n){var p=form.querySelector('[data-err="'+n+'"]'); if(p) p.hidden=false; var el=$(n); if(el) el.classList.add('invalid')}
+  function clearErr(n){if(!n) return; var p=form.querySelector('[data-err="'+n+'"]'); if(p) p.hidden=true; var el=$(n); if(el) el.classList.remove('invalid')}
+
+  function validate(s){
+    var bad=[];
+    if(s===1){ if(!val('tipo')) bad.push('tipo'); else if(!val('servicio')) bad.push('servicio'); }
+    if(s===2){
+      if(!val('origen')) bad.push('origen');
+      if(!val('destino')) bad.push('destino');
+      if(!val('fecha')||val('fecha')<today()) bad.push('fecha');
+      if(!val('hora')) bad.push('hora');
+      if(val('vuelta')){ if(!val('fecha2')||val('fecha2')<val('fecha')) bad.push('fecha2'); if(!val('hora2')) bad.push('hora2'); }
+      if(val('tipo')==='Cargas pequeñas' && !val('detalle')) bad.push('detalle');
+    }
+    if(s===3){
+      if(!val('nombre')) bad.push('nombre');
+      if(val('telefono').replace(/\D/g,'').length<8) bad.push('telefono');
+      if(val('correo') && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val('correo'))) bad.push('correo');
+    }
+    bad.forEach(showErr);
+    if(bad.length){ var f=$(bad[0])||form.querySelector('input[name="'+bad[0]+'"]'); if(f&&f.focus) f.focus(); }
+    return !bad.length;
+  }
+
+  function fmtDate(iso){ if(!iso) return ''; var p=iso.split('-'); var dias=['domingo','lunes','martes','miércoles','jueves','viernes','sábado']; var d=new Date(+p[0],+p[1]-1,+p[2]); return dias[d.getDay()]+' '+p[2]+'/'+p[1]+'/'+p[0]; }
+
+  // ---- Direcciones y precio estimado ----
+  var geo={origen:null,destino:null}, quote=null, qSeq=0;
+  function money(n){return '$'+Math.round(n).toLocaleString('es-CL')}
+  function showQuote(state){
+    var box=$('quote'), amt=$('q-amt'), det=$('q-det');
+    box.classList.toggle('muted',!(quote&&state!=='loading'));
+    if(state==='loading'){amt.textContent='';det.textContent='Calculando la ruta…';return}
+    if(state==='error'){amt.textContent='';det.textContent='No pudimos calcular el precio para esas direcciones. Igual puedes enviar tu solicitud y te cotizamos.';return}
+    if(!quote){amt.textContent='';det.textContent='Escribe el retiro y el destino y elige la dirección de la lista para calcular el precio.';return}
+    amt.textContent=money(quote.total);
+    var parts=[String(quote.km).replace('.',',')+' km · aprox. '+quote.minutos+' min'];
+    parts.push('Ida '+money(quote.porTramo)+(quote.recargoIda?' + nocturno '+money(quote.recargoIda):''));
+    if(quote.vuelta) parts.push('Regreso '+money(quote.porTramo)+(quote.recargoRegreso?' + nocturno '+money(quote.recargoRegreso):''));
+    if(quote.espera) parts.push('Espera '+quote.espera+' min: '+(quote.montoEspera?money(quote.montoEspera):'sin costo'));
+    det.textContent=parts.join(' · ')+'. Precio referencial: te confirmamos el valor final.';
+  }
+  function requestQuote(){
+    if(!val('origen')||!val('destino')){quote=null;showQuote();return}
+    var my=++qSeq; showQuote('loading');
+    fetch('/api/cotizar',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({
+      origen:Object.assign({texto:val('origen')},geo.origen||{}),destino:Object.assign({texto:val('destino')},geo.destino||{}),vuelta:!!val('vuelta'),hora:val('hora'),hora2:val('hora2'),espera:+val('espera')||0})})
+      .then(function(r){return r.json()}).then(function(j){ if(my!==qSeq)return; if(j&&j.ok){quote=j;showQuote()}else{quote=null;showQuote('error')} })
+      .catch(function(){ if(my!==qSeq)return; quote=null; showQuote('error') });
+  }
+  function setupAC(name){
+    var input=$(name), list=$('ac-'+name), items=[], idx=-1, timer=null, seq=0;
+    function close(){list.hidden=true;input.setAttribute('aria-expanded','false');idx=-1}
+    function draw(){
+      if(!items.length){close();return}
+      list.innerHTML=items.map(function(it,i){return '<li role="option" id="ac-'+name+'-'+i+'" aria-selected="'+(i===idx)+'" data-i="'+i+'">'+esc(it.texto)+'</li>'}).join('');
+      list.hidden=false;input.setAttribute('aria-expanded','true');
+    }
+    function pick(i){var it=items[i]; if(!it)return; input.value=it.texto; geo[name]={lat:it.lat,lon:it.lon}; close(); clearErr(name); requestQuote();}
+    input.addEventListener('input',function(){
+      geo[name]=null; quote=null; showQuote(); clearTimeout(timer);
+      var q=input.value.trim(); if(q.length<3){items=[];close();return}
+      timer=setTimeout(function(){ var my=++seq;
+        fetch('/api/cotizar?q='+encodeURIComponent(q)).then(function(r){return r.json()}).then(function(j){ if(my!==seq)return; items=(j&&j.sugerencias)||[]; idx=-1; draw(); }).catch(function(){items=[];close()});
+      },300);
+    });
+    input.addEventListener('keydown',function(e){
+      if(list.hidden)return;
+      if(e.key==='ArrowDown'){e.preventDefault();idx=Math.min(items.length-1,idx+1);draw()}
+      else if(e.key==='ArrowUp'){e.preventDefault();idx=Math.max(0,idx-1);draw()}
+      else if(e.key==='Enter'&&idx>=0){e.preventDefault();pick(idx)}
+      else if(e.key==='Escape'){close()}
+    });
+    list.addEventListener('mousedown',function(e){var li=e.target.closest('li'); if(li){e.preventDefault();pick(+li.dataset.i)}});
+    input.addEventListener('blur',function(){ setTimeout(function(){ close(); if(!geo[name]&&input.value.trim()) requestQuote(); },150) });
+  }
+  setupAC('origen'); setupAC('destino');
+
+  function data(){
+    return {tipo:val('tipo'),servicio:val('servicio'),origen:val('origen'),destino:val('destino'),fecha:val('fecha'),hora:val('hora'),
+      vuelta:val('vuelta'),fecha2:val('fecha2'),hora2:val('hora2'),espera:val('espera'),pasajeros:val('pasajeros'),equipaje:val('equipaje'),detalle:val('detalle'),
+      nombre:val('nombre'),telefono:val('telefono'),correo:val('correo'),rut:val('rut'),notas:val('notas'),
+      origen_geo:geo.origen,destino_geo:geo.destino,km:quote?quote.km:'',precio_estimado:quote?quote.total:''};
+  }
+  function rows(d){
+    var r=[['Servicio',d.tipo+' · '+d.servicio],['Retiro',d.origen],['Destino',d.destino],['Fecha',fmtDate(d.fecha)+', '+d.hora+' h']];
+    if(d.vuelta) r.push(['Regreso',fmtDate(d.fecha2)+', '+d.hora2+' h']);
+    if(+d.espera) r.push(['Espera',d.espera+' minutos']);
+    if(d.tipo==='Personas') r.push(['Pasajeros',d.pasajeros+' · '+d.equipaje]); else r.push(['Carga',d.detalle]);
+    if(d.precio_estimado) r.push(['Precio estimado',money(d.precio_estimado)+' ('+String(d.km).replace('.',',')+' km'+(d.vuelta?', ida y vuelta':'')+')']);
+    r.push(['Nombre',d.nombre],['Teléfono',d.telefono]);
+    if(d.correo) r.push(['Correo',d.correo]);
+    if(d.rut) r.push(['RUT boleta',d.rut]);
+    if(d.notas) r.push(['Comentarios',d.notas]);
+    return r;
+  }
+  function message(d){
+    var lines=['Hola Audimar Traslados, quiero solicitar una reserva:',''];
+    rows(d).forEach(function(x){lines.push('• '+x[0]+': '+x[1])});
+    lines.push('','¿Me confirman disponibilidad y precio? Gracias.');
+    return lines.join('\n');
+  }
+  function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+
+  function buildSummary(){
+    var d=data(), msg=message(d);
+    $('resumen').innerHTML=rows(d).map(function(x){return '<div class="it"><dt>'+esc(x[0])+'</dt><dd>'+esc(x[1])+'</dd></div>'}).join('');
+    $('btn-wa').href='https://wa.me/'+NUM1+'?text='+encodeURIComponent(msg);
+  }
+
+  function go(s){
+    cur=s;
+    steps.forEach(function(f){f.hidden=+f.dataset.step!==s});
+    bars.forEach(function(b,i){b.classList.toggle('on',i<s)});
+    btnBack.hidden=s===1;
+    btnNext.hidden=s===4;
+    if(s===4) buildSummary();
+    window.scrollTo(0,0);
+  }
+  btnNext.addEventListener('click',function(){ if(validate(cur)) go(cur+1); });
+  btnBack.addEventListener('click',function(){ go(cur-1); });
+
+  function record(codigo){
+    var d=data(); d.creada=new Date().toISOString(); d.codigo=codigo||'';
+    var l=store(); l.unshift(d); save(l); renderList();
+  }
+  function finish(codigo){
+    var d=data();
+    $('codigo').textContent=codigo;
+    $('btn-wa-done').href='https://wa.me/'+NUM1+'?text='+encodeURIComponent('Hola Audimar Traslados, acabo de enviar una solicitud de reserva desde la web. Código: '+codigo+' – '+d.nombre+', '+fmtDate(d.fecha)+' '+d.hora+' h.');
+    form.hidden=true; $('done').hidden=false; window.scrollTo(0,0);
+  }
+  var sending=false;
+  $('btn-send').addEventListener('click',function(){
+    if(sending) return;
+    sending=true; var b=$('btn-send'); b.textContent='Enviando…'; b.disabled=true; $('send-err').hidden=true;
+    var d=data(); d.website=$('website').value;
+    var ctrl=('AbortController' in window)?new AbortController():null; var t=setTimeout(function(){ if(ctrl) ctrl.abort(); },15000);
+    fetch('/api/reservas',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(d),signal:ctrl?ctrl.signal:undefined})
+      .then(function(r){ return r.json().then(function(j){ if(!r.ok) throw new Error(j.error||'Error'); return j; }); })
+      .then(function(j){ clearTimeout(t); record(j.codigo); finish(j.codigo); })
+      .catch(function(){ clearTimeout(t); $('send-err').textContent='No pudimos enviar tu solicitud. Inténtalo de nuevo o envíala por WhatsApp.'; $('send-err').hidden=false; $('fallback').hidden=false; })
+      .then(function(){ sending=false; b.disabled=false; b.textContent='Enviar solicitud de reserva'; });
+  });
+  $('btn-new').addEventListener('click',function(){ form.reset(); geo={origen:null,destino:null}; quote=null; showQuote(); syncTipo(); $('box-vuelta').hidden=true; $('send-err').hidden=true; $('fallback').hidden=true; form.hidden=false; $('done').hidden=true; go(1); });
+
+  function prefill(d){
+    form.reset();
+    ['origen','destino','pasajeros','equipaje','detalle','nombre','telefono','correo','rut','notas'].forEach(function(k){ if($(k)) $(k).value=d[k]||$(k).value; });
+    [].forEach.call(form.querySelectorAll('input[name=tipo]'),function(r){r.checked=r.value===d.tipo});
+    syncTipo();
+    [].forEach.call(form.querySelectorAll('input[name=servicio]'),function(r){r.checked=r.value===d.servicio});
+    $('box-vuelta').hidden=true;
+    geo={origen:null,destino:null}; quote=null;
+    form.hidden=false; $('done').hidden=true; tab('reservar'); go(2); requestQuote();
+  }
+  function renderList(){
+    var l=store(), box=$('lista');
+    if(!l.length){ box.innerHTML='<p class="empty">Aún no tienes solicitudes guardadas en este dispositivo.</p>'; return; }
+    box.innerHTML=l.map(function(d,i){
+      return '<div class="bk"><div class="h"><b>'+esc(d.servicio||d.tipo)+'</b><span>'+esc(fmtDate(d.fecha))+' · '+esc(d.hora)+' h</span></div>'+
+        '<p>'+esc(d.origen)+' → '+esc(d.destino)+(d.codigo?' · Código '+esc(d.codigo):'')+'</p>'+
+        '<div class="acts"><button type="button" class="linkbtn" data-rep="'+i+'">Repetir este traslado</button><button type="button" class="linkbtn" data-del="'+i+'">Borrar</button></div></div>';
+    }).join('');
+  }
+  $('lista').addEventListener('click',function(e){
+    var l=store(), r=e.target.getAttribute('data-rep'), d=e.target.getAttribute('data-del');
+    if(r!==null && l[+r]) prefill(l[+r]);
+    if(d!==null){ l.splice(+d,1); save(l); renderList(); }
+  });
+
+  function tab(name){
+    var res=name==='reservar';
+    $('tab-reservar').setAttribute('aria-selected',res); $('tab-mis').setAttribute('aria-selected',!res);
+    $('view-reservar').hidden=!res; $('view-mis').hidden=res;
+    if(!res) renderList();
+  }
+  $('tab-reservar').addEventListener('click',function(){tab('reservar')});
+  $('tab-mis').addEventListener('click',function(){tab('mis')});
+
+  syncTipo(); go(1); renderList();
+})();
+</script>
+</body>
+</html>
