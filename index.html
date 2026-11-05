@@ -15,8 +15,16 @@
   html,body{margin:0;background:var(--cream);color:var(--ink);font-family:'DM Sans',Arial,sans-serif;font-size:16px;line-height:1.5}
   button,input,select,textarea{font:inherit;color:inherit}
   .wrap{max-width:600px;margin:0 auto;padding:0 20px 48px}
-  header.top{background:var(--navy);color:var(--cream);border-left:8px solid var(--orange)}
-  header.top .in{max-width:600px;margin:0 auto;padding:28px 20px 24px}
+  header.top{position:relative;color:var(--cream);border-left:8px solid var(--orange);
+    background:linear-gradient(180deg,rgba(20,33,61,.95) 0%,rgba(20,33,61,.80) 38%,rgba(20,33,61,.25) 72%,rgba(20,33,61,.55) 100%),url(img/auto-frente.jpg) center 62%/cover no-repeat,var(--navy)}
+  header.top .in{max-width:600px;margin:0 auto;padding:28px 20px 210px}
+  .carbadge{position:absolute;left:50%;transform:translateX(-50%);bottom:16px;width:max-content;max-width:calc(100% - 40px);background:rgba(20,33,61,.85);color:var(--cream);font-size:13px;font-weight:700;padding:7px 14px;border-radius:999px;border:1px solid rgba(242,140,40,.6)}
+  .carbadge b{color:var(--orange)}
+  @media (min-width:900px){
+    header.top{background:linear-gradient(90deg,var(--navy) 0%,var(--navy) 58%,rgba(20,33,61,.55) 68%,rgba(20,33,61,0) 80%),url(img/auto-frente.jpg) right center/auto 100% no-repeat,var(--navy);min-height:400px}
+    header.top .in{padding:56px 20px 110px;max-width:600px;margin:0 auto 0 max(20px,calc(50% - 420px))}
+    .carbadge{left:auto;right:24px;transform:none}
+  }
   .eyebrow{font-size:12px;font-weight:700;letter-spacing:2px;color:var(--orange);margin:0 0 6px}
   h1{font-family:'Oswald',Arial,sans-serif;font-weight:700;font-size:40px;line-height:1;margin:0;letter-spacing:.5px}
   h1 span{color:var(--orange)}
@@ -103,13 +111,14 @@
 </style>
 </head>
 <body>
-<header class="top">
+<header class="top" role="banner" aria-label="Audimar Traslados: vehículo SUV nuevo frente a la costa">
   <div class="in">
     <p class="eyebrow">ANTOFAGASTA Y LA REGIÓN</p>
     <h1>AUDIMAR <span>TRASLADOS</span></h1>
     <p class="tagline">Reserva tu traslado de personas o cargas pequeñas en menos de dos minutos.</p>
     <div class="badges"><span class="badge">Servicio 24/7</span><span class="badge">Previa reservación</span><span class="badge ghost">Se emite boleta</span></div>
   </div>
+  <p class="carbadge"><b>✓</b> Vehículos nuevos, cómodos y limpios</p>
 </header>
 
 <nav class="tabs" role="tablist" aria-label="Secciones">
