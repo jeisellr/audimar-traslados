@@ -207,14 +207,14 @@
     <p class="steplabel">PASO 4 DE 4</p>
     <h2>Revisa y envía tu solicitud</h2>
     <div class="summary"><dl id="resumen"></dl></div>
-    <div class="note"><b>¿Cómo sigue?</b> Recibimos tu solicitud y te contactamos por WhatsApp o teléfono con el precio y la confirmación. Atendemos 24/7, previa reservación, y emitimos boleta por cada servicio.</div>
+    <div class="note" id="note-how"><b>¿Cómo sigue?</b> Recibimos tu solicitud y te contactamos por WhatsApp o teléfono con el precio y la confirmación. Atendemos 24/7, previa reservación, y emitimos boleta por cada servicio.</div>
     <div class="hp" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden"><label for="website">No completar</label><input id="website" name="website" type="text" tabindex="-1" autocomplete="off"></div>
     <div class="send">
       <button type="button" class="btn primary" id="btn-send" style="width:100%">Enviar solicitud de reserva</button>
       <p class="err" id="send-err" role="alert" hidden></p>
       <div id="fallback" hidden>
         <a class="btn wa" id="btn-wa" href="#" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>Enviar por WhatsApp</a>
-        <p class="alt">Se abre WhatsApp con el mensaje listo al <b>+56 9 4933 3567</b>.</p>
+        <p class="alt">Se abre WhatsApp con el mensaje listo al <b>+56 9 4933 3567</b>. Solo presiona <b>Enviar</b> en WhatsApp.<br>¿Prefieres el otro número? <a id="btn-wa2" href="#" target="_blank" rel="noopener">Enviar al +56 9 3220 0117</a></p>
       </div>
       <p class="alt">¿Dudas? Llámanos al <b>+56 9 4933 3567</b> o al <b>+56 9 3220 0117</b>.</p>
     </div>
@@ -228,9 +228,9 @@
 
 <div id="done" class="done" hidden>
   <div class="tick"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg></div>
-  <h2>¡Solicitud recibida!</h2>
+  <h2 id="done-title">¡Solicitud recibida!</h2>
   <p>Tu código de reserva es <b id="codigo" style="font-size:22px;letter-spacing:2px"></b></p>
-  <p>Te contactaremos pronto con el precio y la confirmación. Tu reserva queda confirmada cuando te respondamos.</p>
+  <p id="done-text">Te contactaremos pronto con el precio y la confirmación. Tu reserva queda confirmada cuando te respondamos.</p>
   <div class="send" style="margin-top:8px">
     <a class="btn wa" id="btn-wa-done" href="#" target="_blank" rel="noopener">Avisar por WhatsApp (opcional)</a>
   </div>
@@ -254,6 +254,47 @@
 <script>
 (function(){
   var NUM1='56949333567', NUM2='56932200117', MAIL='aurimarsalcedo22@gmail.com', KEY='audimar-solicitudes';
+  // false = versión GitHub Pages (sin servidor): precio calculado en el navegador y reserva por WhatsApp.
+  // true  = versión con servidor (Vercel): guarda las reservas y las muestra en el panel.
+  var CON_SERVIDOR=false;
+
+  // ---- Mapas directamente desde el navegador (modo sin servidor) ----
+  var tarifasMod=null;
+  function tarifas(){ return tarifasMod||(tarifasMod=import('./lib/tarifas.js')); }
+  function etiqueta(f){
+    var x=f.properties||{};
+    var calle=[x.name&&x.name!==x.street?x.name:'', x.street?(x.street+(x.housenumber?' '+x.housenumber:'')):''].filter(Boolean).join(', ');
+    var lugar=x.district||x.locality||x.city||x.county||'';
+    return [calle||x.name||'', lugar&&calle.indexOf(lugar)<0?lugar:''].filter(Boolean).join(', ');
+  }
+  function buscarDirecciones(q){
+    return tarifas().then(function(T){
+      var Z=T.ZONA, C=T.CENTRO, bbox=[Z.minLon,Z.minLat,Z.maxLon,Z.maxLat].join(',');
+      return fetch('https://photon.komoot.io/api/?q='+encodeURIComponent(q)+'&limit=6&lang=default&lat='+C.lat+'&lon='+C.lon+'&bbox='+bbox)
+        .then(function(r){return r.json()}).then(function(j){
+          var vistos={};
+          return (j.features||[]).map(function(f){return {texto:etiqueta(f),lat:f.geometry.coordinates[1],lon:f.geometry.coordinates[0]}})
+            .filter(function(s){ if(!s.texto||!T.enZona(s)||vistos[s.texto]) return false; vistos[s.texto]=1; return true; });
+        });
+    });
+  }
+  function puntoDe(texto,g){
+    if(g&&typeof g.lat==='number') return Promise.resolve(g);
+    var q=/antofagasta|mejillones|calama|tocopilla|taltal|baquedano|juan l[oó]pez/i.test(texto)?texto:texto+', Antofagasta';
+    return buscarDirecciones(q).then(function(l){return l[0]||null});
+  }
+  function cotizarLocal(o){
+    return Promise.all([tarifas(),puntoDe(o.origen,o.origenGeo),puntoDe(o.destino,o.destinoGeo)]).then(function(r){
+      var T=r[0],a=r[1],b=r[2]; if(!a||!b) return {ok:false};
+      return fetch('https://router.project-osrm.org/route/v1/driving/'+a.lon+','+a.lat+';'+b.lon+','+b.lat+'?overview=false&alternatives=false')
+        .then(function(x){return x.json()}).then(function(j){
+          var ruta=j.routes&&j.routes[0]; if(!ruta) return {ok:false};
+          var km=Math.round(ruta.distance/100)/10, minutos=Math.max(1,Math.round(ruta.duration/60));
+          var p=T.calcular({km:km,hora:o.hora,hora2:o.hora2,vuelta:o.vuelta,espera:o.espera});
+          return Object.assign({ok:true,km:km,minutos:minutos,vuelta:o.vuelta},p);
+        });
+    });
+  }
   var form=document.getElementById('form'), steps=[].slice.call(document.querySelectorAll('.step'));
   var bars=[].slice.call(document.querySelectorAll('.progress i'));
   var btnNext=document.getElementById('btn-next'), btnBack=document.getElementById('btn-back');
@@ -327,9 +368,11 @@
   function requestQuote(){
     if(!val('origen')||!val('destino')){quote=null;showQuote();return}
     var my=++qSeq; showQuote('loading');
-    fetch('/api/cotizar',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({
-      origen:Object.assign({texto:val('origen')},geo.origen||{}),destino:Object.assign({texto:val('destino')},geo.destino||{}),vuelta:!!val('vuelta'),hora:val('hora'),hora2:val('hora2'),espera:+val('espera')||0})})
-      .then(function(r){return r.json()}).then(function(j){ if(my!==qSeq)return; if(j&&j.ok){quote=j;showQuote()}else{quote=null;showQuote('error')} })
+    var pedido=CON_SERVIDOR
+      ? fetch('/api/cotizar',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({
+          origen:Object.assign({texto:val('origen')},geo.origen||{}),destino:Object.assign({texto:val('destino')},geo.destino||{}),vuelta:!!val('vuelta'),hora:val('hora'),hora2:val('hora2'),espera:+val('espera')||0})}).then(function(r){return r.json()})
+      : cotizarLocal({origen:val('origen'),origenGeo:geo.origen,destino:val('destino'),destinoGeo:geo.destino,vuelta:!!val('vuelta'),hora:val('hora'),hora2:val('hora2'),espera:+val('espera')||0});
+    pedido.then(function(j){ if(my!==qSeq)return; if(j&&j.ok){quote=j;showQuote()}else{quote=null;showQuote('error')} })
       .catch(function(){ if(my!==qSeq)return; quote=null; showQuote('error') });
   }
   function setupAC(name){
@@ -345,7 +388,8 @@
       geo[name]=null; quote=null; showQuote(); clearTimeout(timer);
       var q=input.value.trim(); if(q.length<3){items=[];close();return}
       timer=setTimeout(function(){ var my=++seq;
-        fetch('/api/cotizar?q='+encodeURIComponent(q)).then(function(r){return r.json()}).then(function(j){ if(my!==seq)return; items=(j&&j.sugerencias)||[]; idx=-1; draw(); }).catch(function(){items=[];close()});
+        (CON_SERVIDOR ? fetch('/api/cotizar?q='+encodeURIComponent(q)).then(function(r){return r.json()}).then(function(j){return (j&&j.sugerencias)||[]}) : buscarDirecciones(q))
+          .then(function(l){ if(my!==seq)return; items=l; idx=-1; draw(); }).catch(function(){items=[];close()});
       },300);
     });
     input.addEventListener('keydown',function(e){
@@ -378,8 +422,10 @@
     if(d.notas) r.push(['Comentarios',d.notas]);
     return r;
   }
+  var codigoLocal='';
+  function nuevoCodigo(){var c='ABCDEFGHJKLMNPQRSTUVWXYZ23456789',s='';for(var i=0;i<6;i++)s+=c[Math.floor(Math.random()*c.length)];return s}
   function message(d){
-    var lines=['Hola Audimar Traslados, quiero solicitar una reserva:',''];
+    var lines=['Hola Audimar Traslados, quiero solicitar una reserva'+(codigoLocal?' (código '+codigoLocal+')':'')+':',''];
     rows(d).forEach(function(x){lines.push('• '+x[0]+': '+x[1])});
     lines.push('','¿Me confirman disponibilidad y precio? Gracias.');
     return lines.join('\n');
@@ -387,9 +433,11 @@
   function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
 
   function buildSummary(){
+    if(!CON_SERVIDOR&&!codigoLocal) codigoLocal=nuevoCodigo();
     var d=data(), msg=message(d);
     $('resumen').innerHTML=rows(d).map(function(x){return '<div class="it"><dt>'+esc(x[0])+'</dt><dd>'+esc(x[1])+'</dd></div>'}).join('');
     $('btn-wa').href='https://wa.me/'+NUM1+'?text='+encodeURIComponent(msg);
+    $('btn-wa2').href='https://wa.me/'+NUM2+'?text='+encodeURIComponent(msg);
   }
 
   function go(s){
@@ -411,7 +459,9 @@
   function finish(codigo){
     var d=data();
     $('codigo').textContent=codigo;
-    $('btn-wa-done').href='https://wa.me/'+NUM1+'?text='+encodeURIComponent('Hola Audimar Traslados, acabo de enviar una solicitud de reserva desde la web. Código: '+codigo+' – '+d.nombre+', '+fmtDate(d.fecha)+' '+d.hora+' h.');
+    $('btn-wa-done').href=CON_SERVIDOR
+      ? 'https://wa.me/'+NUM1+'?text='+encodeURIComponent('Hola Audimar Traslados, acabo de enviar una solicitud de reserva desde la web. Código: '+codigo+' – '+d.nombre+', '+fmtDate(d.fecha)+' '+d.hora+' h.')
+      : $('btn-wa').href;
     form.hidden=true; $('done').hidden=false; window.scrollTo(0,0);
   }
   var sending=false;
@@ -426,7 +476,22 @@
       .catch(function(){ clearTimeout(t); $('send-err').textContent='No pudimos enviar tu solicitud. Inténtalo de nuevo o envíala por WhatsApp.'; $('send-err').hidden=false; $('fallback').hidden=false; })
       .then(function(){ sending=false; b.disabled=false; b.textContent='Enviar solicitud de reserva'; });
   });
-  $('btn-new').addEventListener('click',function(){ form.reset(); geo={origen:null,destino:null}; quote=null; showQuote(); syncTipo(); $('box-vuelta').hidden=true; $('send-err').hidden=true; $('fallback').hidden=true; form.hidden=false; $('done').hidden=true; go(1); });
+  function enviadoPorWhatsApp(){
+    if(CON_SERVIDOR) return;
+    record(codigoLocal);
+    var c=codigoLocal;
+    setTimeout(function(){ finish(c); },400);
+  }
+  $('btn-wa').addEventListener('click',enviadoPorWhatsApp);
+  $('btn-wa2').addEventListener('click',enviadoPorWhatsApp);
+  if(!CON_SERVIDOR){
+    $('btn-send').hidden=true; $('fallback').hidden=false;
+    $('done-title').textContent='¡Casi listo!';
+    $('done-text').textContent='Se abrió WhatsApp con tu solicitud. Presiona Enviar en WhatsApp para que la recibamos; te responderemos con la confirmación.';
+    $('btn-wa-done').textContent='Abrir WhatsApp de nuevo';
+    $('note-how').innerHTML='<b>¿Cómo sigue?</b> Al tocar el botón se abre WhatsApp con tu solicitud lista: solo presiona Enviar. Te respondemos con la confirmación. Atendemos 24/7, previa reservación, y emitimos boleta por cada servicio.';
+  }
+  $('btn-new').addEventListener('click',function(){ codigoLocal=''; form.reset(); geo={origen:null,destino:null}; quote=null; showQuote(); syncTipo(); $('box-vuelta').hidden=true; $('send-err').hidden=true; $('fallback').hidden=CON_SERVIDOR; form.hidden=false; $('done').hidden=true; go(1); });
 
   function prefill(d){
     form.reset();
@@ -435,7 +500,7 @@
     syncTipo();
     [].forEach.call(form.querySelectorAll('input[name=servicio]'),function(r){r.checked=r.value===d.servicio});
     $('box-vuelta').hidden=true;
-    geo={origen:null,destino:null}; quote=null;
+    geo={origen:null,destino:null}; quote=null; codigoLocal='';
     form.hidden=false; $('done').hidden=true; tab('reservar'); go(2); requestQuote();
   }
   function renderList(){
