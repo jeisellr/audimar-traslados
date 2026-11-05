@@ -3,7 +3,23 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Audimar Traslados – Reserva tu traslado</title>
+<title>Audimar Traslados – Reserva tu traslado en Antofagasta</title>
+<meta name="description" content="Traslados de personas y cargas pequeñas en Antofagasta y la región, 24/7 previa reservación. Precio al instante, vehículos nuevos y se emite boleta.">
+<meta name="theme-color" content="#14213D">
+<link rel="canonical" href="https://audimartraslados.cl/">
+<link rel="icon" type="image/png" sizes="32x32" href="img/icons/favicon-32.png">
+<link rel="apple-touch-icon" href="img/icons/apple-touch-icon.png">
+<link rel="manifest" href="manifest.webmanifest">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="es_CL">
+<meta property="og:site_name" content="Audimar Traslados">
+<meta property="og:title" content="Audimar Traslados – Reserva tu traslado">
+<meta property="og:description" content="Personas y cargas pequeñas en Antofagasta y la región. 24/7 previa reservación, precio al instante y boleta.">
+<meta property="og:url" content="https://audimartraslados.cl/">
+<meta property="og:image" content="https://audimartraslados.cl/img/og-audimar.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=DM+Sans:wght@400;500;700&display=swap">
 <style>
   :root{
@@ -96,6 +112,10 @@
   .empty{text-align:center;color:var(--muted);padding:32px 0}
   footer{max-width:600px;margin:0 auto;padding:24px 20px 40px;color:var(--muted);font-size:13px;border-top:1px solid var(--line)}
   footer b{color:var(--ink)}
+  .fab{position:fixed;right:16px;bottom:16px;z-index:50;display:inline-flex;align-items:center;gap:8px;background:#1F7A4D;color:#fff;text-decoration:none;font-weight:700;font-size:15px;padding:12px 16px;border-radius:999px;box-shadow:0 6px 18px rgba(20,33,61,.25);min-height:48px}
+  .fab:hover{background:#18633E}
+  .fab svg{width:22px;height:22px}
+  body{padding-bottom:72px}
   [hidden]{display:none!important}
   @media (max-width:420px){ .choice{grid-template-columns:1fr} .row{grid-template-columns:1fr} h1{font-size:34px} .summary .it{grid-template-columns:1fr;gap:2px} }
   .ac{position:relative}
@@ -254,6 +274,8 @@
 </section>
 </main>
 
+<a class="fab" href="https://wa.me/56949333567?text=Hola%20Audimar%20Traslados%2C%20tengo%20una%20consulta" target="_blank" rel="noopener" aria-label="Escríbenos por WhatsApp"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>¿Dudas?</a>
+
 <footer>
   <b>Audimar Traslados</b> · Audimar del Valle Salcedo · RUT 27.699.831-5<br>
   Teléfonos: +56 9 4933 3567 · +56 9 3220 0117 · aurimarsalcedo22@gmail.com<br>
@@ -335,6 +357,9 @@
   function showErr(n){var p=form.querySelector('[data-err="'+n+'"]'); if(p) p.hidden=false; var el=$(n); if(el) el.classList.add('invalid')}
   function clearErr(n){if(!n) return; var p=form.querySelector('[data-err="'+n+'"]'); if(p) p.hidden=true; var el=$(n); if(el) el.classList.remove('invalid')}
 
+  var ANTICIPACION_MIN=60; // minutos mínimos de anticipación para reservar
+  function cuando(f,h){var a=f.split('-'),b=h.split(':');return new Date(+a[0],+a[1]-1,+a[2],+b[0],+b[1]).getTime()}
+  function setErrText(n,t){var p=form.querySelector('[data-err="'+n+'"]'); if(p) p.textContent=t;}
   function validate(s){
     var bad=[];
     if(s===1){ if(!val('tipo')) bad.push('tipo'); else if(!val('servicio')) bad.push('servicio'); }
@@ -342,8 +367,17 @@
       if(!val('origen')) bad.push('origen');
       if(!val('destino')) bad.push('destino');
       if(!val('fecha')||val('fecha')<today()) bad.push('fecha');
+      setErrText('hora','Indica la hora.'); setErrText('hora2','Indica la hora de regreso.');
       if(!val('hora')) bad.push('hora');
-      if(val('vuelta')){ if(!val('fecha2')||val('fecha2')<val('fecha')) bad.push('fecha2'); if(!val('hora2')) bad.push('hora2'); }
+      else if(val('fecha') && cuando(val('fecha'),val('hora')) < Date.now()+ANTICIPACION_MIN*60000){
+        setErrText('hora','Reserva con al menos '+(ANTICIPACION_MIN>=60?(ANTICIPACION_MIN/60)+' hora'+(ANTICIPACION_MIN>60?'s':''):ANTICIPACION_MIN+' minutos')+' de anticipación. Si es urgente, llámanos al +56 9 4933 3567.');
+        bad.push('hora');
+      }
+      if(val('vuelta')){
+        if(!val('fecha2')||val('fecha2')<val('fecha')) bad.push('fecha2');
+        if(!val('hora2')) bad.push('hora2');
+        else if(val('fecha2')===val('fecha') && val('hora') && val('hora2')<=val('hora')){ setErrText('hora2','El regreso debe ser después de la hora de ida.'); bad.push('hora2'); }
+      }
       if(val('tipo')==='Cargas pequeñas' && !val('detalle')) bad.push('detalle');
     }
     if(s===3){
@@ -456,8 +490,10 @@
     btnBack.hidden=s===1;
     btnNext.hidden=s===4;
     if(s===4) buildSummary();
-    window.scrollTo(0,0);
+    if(iniciado) alFormulario(); iniciado=true;
   }
+  var iniciado=false;
+  function alFormulario(){ var t=document.querySelector('nav.tabs'); if(t&&t.scrollIntoView) t.scrollIntoView({behavior:'smooth',block:'start'}); }
   btnNext.addEventListener('click',function(){ if(validate(cur)) go(cur+1); });
   btnBack.addEventListener('click',function(){ go(cur-1); });
 
@@ -471,7 +507,7 @@
     $('btn-wa-done').href=CON_SERVIDOR
       ? 'https://wa.me/'+NUM1+'?text='+encodeURIComponent('Hola Audimar Traslados, acabo de enviar una solicitud de reserva desde la web. Código: '+codigo+' – '+d.nombre+', '+fmtDate(d.fecha)+' '+d.hora+' h.')
       : $('btn-wa').href;
-    form.hidden=true; $('done').hidden=false; window.scrollTo(0,0);
+    form.hidden=true; $('done').hidden=false; alFormulario();
   }
   var sending=false;
   $('btn-send').addEventListener('click',function(){
@@ -504,7 +540,7 @@
 
   function prefill(d){
     form.reset();
-    ['origen','destino','pasajeros','equipaje','detalle','nombre','telefono','correo','rut','notas'].forEach(function(k){ if($(k)) $(k).value=d[k]||$(k).value; });
+    ['origen','destino','espera','pasajeros','equipaje','detalle','nombre','telefono','correo','rut','notas'].forEach(function(k){ if($(k)) $(k).value=d[k]||$(k).value; });
     [].forEach.call(form.querySelectorAll('input[name=tipo]'),function(r){r.checked=r.value===d.tipo});
     syncTipo();
     [].forEach.call(form.querySelectorAll('input[name=servicio]'),function(r){r.checked=r.value===d.servicio});
